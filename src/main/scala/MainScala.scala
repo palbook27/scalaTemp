@@ -21,6 +21,7 @@ object MainScala {
     // RNG
     val rng1 = Simple(111)
     println(rng1.nextInt)
+    /*
     val (n2 , rng2) = rng1.nextInt
     println(RNG.nonNegativeInt(rng2))
     println(RNG.double(rng2))
@@ -32,6 +33,15 @@ object MainScala {
     val (n4 , rng4) = rng3.nextInt
     println(RNG.nonNegativeInt(rng4))
     println(RNG.double(rng4))
+
+    */
+
+    var (testN , rngTest) = rng1.nextInt
+    for (i <-  1 until 50) {
+      println(RNG.nonNegativeInt(rngTest))
+      val (testN2 , rngTest2) = rngTest.nextInt
+      rngTest = rngTest2
+    }
 
   }
 }

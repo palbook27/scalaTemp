@@ -39,7 +39,7 @@ object RNG {
     val (d3 , r3) = double(r2)
     ((d1, d2, d3) , r3)
   }
-
+  /*
   def ints(count: Int)(rng: RNG): (List[Int] , RNG) = {
     if (count < 1)
       (List() , rng)
@@ -49,7 +49,7 @@ object RNG {
       (i1 :: is2 , r2)
     }
   }
-
+*/
   type Rand[+A] = RNG => (A , RNG)
 
   val int: Rand[Int] = _.nextInt
@@ -85,5 +85,11 @@ object RNG {
 
   val randDoubleInt: Rand[(Double , Int)] =
     both(double , int)
+
+  // List[Rand[A]] = (RNG => (A , RNG) , RNG => (A , RNG) , RNG => (A , RNG) ...)
+  // Rand[List[A]] = RNG => (List[A] , RNG)
+  //def sequence[A](fs: List[Rand[A]]) : Rand[List[A]] = {
+
+  //}
 
 }
