@@ -34,7 +34,9 @@ object MainScala {
     println(RNG.nonNegativeInt(rng4))
     println(RNG.double(rng4))
 
-    */
+
+     */
+
 
     var (testN , rngTest) = rng1.nextInt
     for (i <-  1 until 50) {

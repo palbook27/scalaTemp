@@ -1,3 +1,4 @@
+
 trait RNG {
   def nextInt: (Int, RNG)
 }
@@ -57,7 +58,7 @@ object RNG {
   def unit[A](a: A): Rand[A] =
     rng => (a, rng)
 
-  def map[A,B](s: Rand[A])(f: A => B): Rand[B] =
+  def map[A , B](s: Rand[A])(f: A => B): Rand[B] =
     rng => {
       val (a, rng2) = s(rng)
       (f(a), rng2)
@@ -77,7 +78,7 @@ object RNG {
     }
   }
 
-  def both[A,B](ra:Rand[A] , rb:Rand[B]): Rand[(A,B)] =
+  def both[A , B](ra:Rand[A] , rb:Rand[B]): Rand[(A , B)] =
     map2(ra , rb)((_ , _))
 
   val randIntDouble: Rand[(Int , Double)] =
@@ -88,8 +89,40 @@ object RNG {
 
   // List[Rand[A]] = (RNG => (A , RNG) , RNG => (A , RNG) , RNG => (A , RNG) ...)
   // Rand[List[A]] = RNG => (List[A] , RNG)
+  // def foldRight[A , B](as: List[A], z: B)(f: (A, B) => B): B
   //def sequence[A](fs: List[Rand[A]]) : Rand[List[A]] = {
+  //  List.foldRight(fs , unit(List[A]()))((f, acc) => map2(f, acc)(_ :: _))
+  // }
 
-  //}
+  def nonNegativeLessThan(n: Int): Rand[Int] = {
+    rng =>
+      val (i , rng2) = nonNegativeInt(rng)
+      val mod = i % n
+      if(i + (n-1) - mod >= 0)
+        (mod , rng2)
+      else nonNegativeLessThan(n)(rng2)
+  }
 
+  def flatMap[A , B](f: Rand[A])(g: A => Rand[B]): Rand[B] = {
+    rng => {
+      val (a , r1) = f(rng)
+      g(a)(r1)
+    }
+  }
+
+  def nonNegativeLessThan2(n: Int): Rand[Int] = {
+    flatMap(nonNegativeInt) { i =>
+      val mod = i % n
+      if (i + (n-1) - mod >= 0) unit(mod) else nonNegativeLessThan(n)
+    }
+  }
+
+  def _map[A , B](s: Rand[A])(f: A => B): Rand[B] =
+    flatMap(s)(a => unit(f(a)))
+
+  def _map2[A , B , C](ra: Rand[A] , rb: Rand[B])(f:(A , B) => C): Rand[C] =
+    flatMap(ra)(a => _map(rb)(b => f(a,b)))
+
+  def rollDie: Rand[Int] = map(nonNegativeLessThan(6))(_ + 1)
 }
+
